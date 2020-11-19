@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 import income from '../../assets/income.svg';
 import outcome from '../../assets/outcome.svg';
@@ -12,7 +12,6 @@ import formatValue from '../../utils/formatValue';
 import formatDate from '../../utils/formatDate';
 
 import { Container, CardContainer, Card, TableContainer } from './styles';
-import { useMemo } from 'react';
 
 interface Transaction {
   id: string;
@@ -33,7 +32,6 @@ interface Balance {
 
 const Dashboard: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [error, setError] = useState('');
   const [balance, setBalance] = useState<Balance>({} as Balance);
 
   const formattedBalance = useMemo<Balance>(() => {
@@ -47,7 +45,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
       api
-        .get('./transactions')
+        .get('/transactions')
         .then(response => {
           const formattedTransactions: Transaction[] = response.data.transactions.map(
             (transaction: Transaction) => ({
@@ -62,7 +60,8 @@ const Dashboard: React.FC = () => {
           setBalance(response.data.balance);
         })
         .catch(err => {
-          setError(err);
+          // eslint-disable-next-line no-console
+          console.log({ err });
         });
     }
 
@@ -113,7 +112,7 @@ const Dashboard: React.FC = () => {
                 <tr key={transaction.id}>
                   <td className="title">{transaction.title}</td>
                   <td className={`${transaction.type}`}>
-                    {`${transaction.type === 'outcome' ? '-' : ''}`}
+                    {`${transaction.type === 'outcome' ? '- ' : ''}`}
                     {formatValue(transaction.value)}
                   </td>
                   <td>{transaction.category.title}</td>
