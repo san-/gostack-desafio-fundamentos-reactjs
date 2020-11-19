@@ -12,6 +12,7 @@ import formatValue from '../../utils/formatValue';
 import formatDate from '../../utils/formatDate';
 
 import { Container, CardContainer, Card, TableContainer } from './styles';
+import { useMemo } from 'react';
 
 interface Transaction {
   id: string;
@@ -35,6 +36,14 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [balance, setBalance] = useState<Balance>({} as Balance);
 
+  const formattedBalance = useMemo<Balance>(() => {
+    return {
+      income: formatValue(Number(balance.income)),
+      outcome: formatValue(Number(balance.outcome)),
+      total: formatValue(Number(balance.total)),
+    };
+  }, [balance]);
+
   useEffect(() => {
     async function loadTransactions(): Promise<void> {
       api
@@ -50,13 +59,7 @@ const Dashboard: React.FC = () => {
 
           setTransactions(formattedTransactions);
 
-          const formattedBalance = {
-            income: formatValue(response.data.balance.income),
-            outcome: formatValue(response.data.balance.outcome),
-            total: formatValue(response.data.balance.total),
-          };
-
-          setBalance(formattedBalance);
+          setBalance(response.data.balance);
         })
         .catch(err => {
           setError(err);
@@ -76,21 +79,21 @@ const Dashboard: React.FC = () => {
               <p>Entradas</p>
               <img src={income} alt="Income" />
             </header>
-            <h1 data-testid="balance-income">{balance.income}</h1>
+            <h1 data-testid="balance-income">{formattedBalance.income}</h1>
           </Card>
           <Card>
             <header>
               <p>Saídas</p>
               <img src={outcome} alt="Outcome" />
             </header>
-            <h1 data-testid="balance-outcome">{balance.outcome}</h1>
+            <h1 data-testid="balance-outcome">{formattedBalance.outcome}</h1>
           </Card>
           <Card total>
             <header>
               <p>Total</p>
               <img src={total} alt="Total" />
             </header>
-            <h1 data-testid="balance-total">{balance.total}</h1>
+            <h1 data-testid="balance-total">{formattedBalance.total}</h1>
           </Card>
         </CardContainer>
 

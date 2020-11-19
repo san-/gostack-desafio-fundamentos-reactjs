@@ -30,7 +30,7 @@ import App from '../App';
 const apiMock = new MockAdapter(api);
 
 const wait = (amount = 0): Promise<void> => {
-  return new Promise(resolve => setTimeout(resolve, amount));
+  return new Promise((resolve) => setTimeout(resolve, amount));
 };
 
 const actWait = async (amount = 0): Promise<void> => {
@@ -99,6 +99,7 @@ describe('Dashboard', () => {
     });
 
     await actWait();
+
 
     expect(getByTestId('balance-income')).toHaveTextContent('R$ 6.000,00');
 
@@ -203,6 +204,7 @@ describe('Dashboard', () => {
 
     const file = new File(
       [
+        // eslint-disable-next-line no-multi-str
         'title, type, value, category\
         Loan, income, 1500, Others\
         Website Hosting, outcome, 50, Others\
